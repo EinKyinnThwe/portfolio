@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior:smooth">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Ein Kyinn Thwe — Software Developer</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { ocean: '#0077B6', bright: '#00B4D8', deep: '#023E8A', bg: '#05070A', bg2: '#0A1017', card: '#0D151D', mute: '#94A3B8' }, fontFamily: { sans: ['Space Grotesk', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] } } } }
+    </script>
+    <style>
+        :root {
+            --line: rgba(0, 180, 216, .15)
+        }
+
+        html,
+        body {
+            background: #05070A;
+            color: #F5F7FA;
+            overflow-x: hidden
+        }
+
+        :root {
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px)
+        }
+
+        html {
+            scroll-padding-top: 80px
+        }
+
+        body {
+            font-family: 'Space Grotesk', system-ui, sans-serif
+        }
+
+        .grad {
+            background: linear-gradient(90deg, #00B4D8, #0077B6 60%, #023E8A);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent
+        }
+
+        .glass {
+            background: rgba(13, 21, 29, .6);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--line)
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            pointer-events: none;
+            animation: drift 14s ease-in-out infinite alternate
+        }
+
+        @keyframes drift {
+            to {
+                transform: translate(40px, -30px) scale(1.15)
+            }
+        }
+
+        @keyframes float {
+            50% {
+                transform: translateY(-12px)
+            }
+        }
+
+        .float {
+            animation: float 6s ease-in-out infinite
+        }
+
+        .grid-bg {
+            background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 56px 56px;
+            -webkit-mask-image: radial-gradient(ellipse at 60% 30%, #000 10%, transparent 70%);
+            mask-image: radial-gradient(ellipse at 60% 30%, #000 10%, transparent 70%);
+            opacity: .45
+        }
+
+        .rv {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity .8s cubic-bezier(.2, .7, .2, 1), transform .8s cubic-bezier(.2, .7, .2, 1);
+            transition-delay: var(--d, 0s)
+        }
+
+        .rv.in {
+            opacity: 1;
+            transform: none
+        }
+
+        .btn {
+            transition: all .3s
+        }
+
+        .btn:hover {
+            transform: translateY(-2px)
+        }
+
+        .pcard {
+            transition: border-color .4s, box-shadow .4s, transform .4s
+        }
+
+        .pcard:hover {
+            border-color: rgba(0, 180, 216, .5);
+            box-shadow: 0 30px 80px -30px rgba(0, 180, 216, .35);
+            transform: translateY(-4px)
+        }
+
+        .pcard .shot {
+            transition: transform .8s cubic-bezier(.2, .7, .2, 1)
+        }
+
+        .pcard:hover .shot {
+            transform: scale(1.06)
+        }
+
+        .chip {
+            transition: all .3s
+        }
+
+        .chip:hover {
+            border-color: #00B4D8;
+            color: #fff;
+            box-shadow: 0 0 24px -6px #00B4D8;
+            transform: translateY(-2px)
+        }
+
+        a:focus-visible,
+        button:focus-visible {
+            outline: 2px solid #00B4D8;
+            outline-offset: 3px;
+            border-radius: 8px
+        }
+
+        .nav a.act {
+            color: #fff
+        }
+
+        .nav a.act::after {
+            transform: scaleX(1)
+        }
+
+        .nav a::after {
+            content: '';
+            display: block;
+            height: 2px;
+            margin-top: 4px;
+            background: #00B4D8;
+            transform: scaleX(0);
+            transition: transform .3s;
+            transform-origin: left;
+            box-shadow: 0 0 10px #00B4D8
+        }
+
+        .tl::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 6px;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(#00B4D8, rgba(2, 62, 138, .1));
+            box-shadow: 0 0 14px #00B4D8
+        }
+
+        .ham span {
+            display: block;
+            height: 2px;
+            width: 22px;
+            background: #fff;
+            transition: all .3s;
+            margin: 5px 0
+        }
+
+        .ham.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg)
+        }
+
+        .ham.open span:nth-child(2) {
+            opacity: 0
+        }
+
+        .ham.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg)
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important
+            }
+
+            .rv {
+                opacity: 1;
+                transform: none
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- NAV -->
+    <header id="hdr" class="fixed inset-x-0 top-0 z-50 transition-all duration-300"
+        style="padding-top:env(safe-area-inset-top,0px)">
+        <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+            <a href="#home" class="font-mono font-medium text-lg tracking-widest"><span class="grad">EK</span><span
+                    class="text-bright">.</span></a>
+            <nav class="nav hidden md:flex gap-8 text-sm text-mute" aria-label="Primary">
+                <a href="#home" class="hover:text-white transition">Home</a><a href="#about"
+                    class="hover:text-white transition">About</a><a href="#skills"
+                    class="hover:text-white transition">Skills</a><a href="#projects"
+                    class="hover:text-white transition">Projects</a><a href="#education"
+                    class="hover:text-white transition">Education</a><a href="#contact"
+                    class="hover:text-white transition">Contact</a>
+            </nav>
+            <button id="ham" class="ham md:hidden p-2" aria-label="Toggle menu"
+                aria-expanded="false"><span></span><span></span><span></span></button>
+        </div>
+        <div id="mob"
+            class="md:hidden overflow-hidden max-h-0 transition-all duration-500 bg-bg/95 backdrop-blur-xl border-b border-[var(--line)]">
+            <nav class="px-5 py-4 flex flex-col gap-1 text-lg" aria-label="Mobile">
+                <a class="py-3 border-b border-white/5" href="#home">Home</a><a class="py-3 border-b border-white/5"
+                    href="#about">About</a><a class="py-3 border-b border-white/5" href="#skills">Skills</a><a
+                    class="py-3 border-b border-white/5" href="#projects">Projects</a><a
+                    class="py-3 border-b border-white/5" href="#education">Education</a><a class="py-3"
+                    href="#contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section id="home" class="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+            <div class="grid-bg absolute inset-0"></div>
+            <div class="orb w-[460px] h-[460px] bg-ocean/40 -top-20 right-[-80px]"></div>
+            <div class="orb w-[380px] h-[380px] bg-deep/60 bottom-0 -left-24" style="animation-delay:-6s"></div>
+            <div class="relative max-w-6xl mx-auto px-5 grid lg:grid-cols-12 gap-14 items-center w-full">
+                <div class="lg:col-span-7">
+                    <p
+                        class="rv inline-flex items-center gap-2 font-mono text-xs tracking-[.3em] text-bright glass rounded-full px-4 py-2">
+                        <span class="w-2 h-2 rounded-full bg-bright shadow-[0_0_12px_#00B4D8]"></span>SOFTWARE DEVELOPER
+                    </p>
+                    <p class="rv mt-8 text-mute text-lg" style="--d:.1s">Hi, I'm <span
+                            class="text-white font-medium">Ein Kyinn Thwe</span></p>
+                    <h1 class="rv mt-3 text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.02] tracking-tight"
+                        style="--d:.2s">
+                        Building Digital<br><span class="grad">Experiences</span><br>That Matter.</h1>
+                    <p class="rv mt-7 max-w-xl text-mute text-lg leading-relaxed" style="--d:.3s">A software developer
+                        building
+                        modern web and mobile applications, crafting intuitive user experiences, and solving real-world
+                        problems
+                        through technology.</p>
+                    <div class="rv mt-10 flex flex-wrap gap-4" style="--d:.4s">
+                        <a href="#projects"
+                            class="btn px-7 py-3.5 rounded-xl font-medium bg-gradient-to-r from-bright to-ocean text-bg shadow-[0_10px_40px_-10px_#00B4D8]">Explore
+                            My Work</a>
+                        <a href="#contact"
+                            class="btn px-7 py-3.5 rounded-xl font-medium glass hover:border-bright/60">Get In
+                            Touch</a>
+                    </div>
+                    <div class="rv mt-10 flex gap-3 text-sm text-mute font-mono" style="--d:.5s">
+                        <a class="chip glass rounded-lg px-4 py-2" href="https://github.com/EinKyinnThwe">GitHub</a>
+                        <a class="chip glass rounded-lg px-4 py-2"
+                            href="https://www.linkedin.com/in/ein-kyinn-thwe-9566b938b/">LinkedIn</a>
+                        <a class="chip glass rounded-lg px-4 py-2" href="mailto:einkyinnthwe@gmail.com">Email</a>
+                    </div>
+                </div>
+                <div class="lg:col-span-5 relative hidden sm:block rv" style="--d:.3s">
+                    <div class="absolute inset-0 m-auto w-72 h-72 rounded-full bg-bright/20 blur-3xl"></div>
+                    <div
+                        class="glass rounded-2xl p-5 font-mono text-[13px] leading-7 shadow-[0_40px_100px_-30px_rgba(0,119,182,.6)] float">
+                        <div class="flex gap-1.5 mb-3"><i class="w-3 h-3 rounded-full bg-white/15"></i><i
+                                class="w-3 h-3 rounded-full bg-white/15"></i><i
+                                class="w-3 h-3 rounded-full bg-bright"></i><span
+                                class="ml-auto text-mute text-xs">developer.ts</span></div>
+                        <div><span class="text-bright">const</span> developer = {</div>
+                        <div class="pl-5">role: <span class="text-[#7dd3fc]">'Software Developer'</span>,</div>
+                        <div class="pl-5">stack: [<span class="text-[#7dd3fc]">'Kotlin'</span>, <span
+                                class="text-[#7dd3fc]">'PHP'</span>, <span class="text-[#7dd3fc]">'React
+                                Native'</span>],</div>
+                        <div class="pl-5">focus: <span class="text-[#7dd3fc]">'clean code & UX'</span>,</div>
+                        <div class="pl-5">building: <span class="text-bright">true</span></div>
+                        <div>};</div>
+                    </div>
+                    <div class="glass rounded-xl px-4 py-3 text-xs font-mono absolute -bottom-8 -left-6 float"
+                        style="animation-delay:-2s"><span class="text-bright">●</span> Open to opportunities</div>
+                    <div class="glass rounded-xl px-4 py-3 text-xs font-mono absolute -top-6 -right-2 float"
+                        style="animation-delay:-4s">&lt;UI/UX /&gt;</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT -->
+        <section id="about" class="relative py-28 bg-bg2">
+            <div class="max-w-6xl mx-auto px-5 grid lg:grid-cols-12 gap-14">
+                <div class="lg:col-span-5 lg:sticky lg:top-28 self-start">
+                    <p class="rv font-mono text-xs tracking-[.3em] text-bright">01 — ABOUT</p>
+                    <h2 class="rv mt-4 text-4xl sm:text-5xl font-bold leading-tight" style="--d:.1s">Code with <span
+                            class="grad">craft</span>,<br>design with care.</h2>
+                    <div class="rv mt-10 grid grid-cols-2 gap-3" style="--d:.2s">
+                        <div class="glass rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold grad">[3]</div>
+                            <div class="text-xs text-mute mt-1">Projects</div>
+                        </div>
+                        <div class="glass rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold grad">[2]</div>
+                            <div class="text-xs text-mute mt-1">Milestones</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-7 space-y-8 text-mute text-lg leading-relaxed">
+                    <p class="rv text-2xl text-white/90 leading-snug">I’m a software developer who enjoys turning ideas
+                        into polished, usable products across web and mobile.</p>
+                    <p class="rv">I’m currently pursuing a BSc (Hons) Computing at KMD College, awarded by the
+                        University of Greenwich.
+                    </p>
+                    <p class="rv">I build web and mobile applications with a focus on clean code, thoughtful UI/UX, and
+                        practical problem-solving. My
+                        experience includes developing Android applications with Kotlin and React Native, as well as web
+                        applications using technologies such as
+                        PHP, MySQL, and JavaScript.</p>
+                    <p class="rv">My goal is to grow into a skilled software engineer and Android developer who builds
+                        reliable, maintainable applications
+                        that solve real problems and provide users with an enjoyable experience.</p>
+                    <div class="rv grid sm:grid-cols-3 gap-4 pt-4">
+                        <div class="border-l-2 border-bright pl-4">
+                            <div class="text-white font-medium">Clean Code</div>
+                            <div class="text-sm">Readable, maintainable</div>
+                        </div>
+                        <div class="border-l-2 border-bright pl-4">
+                            <div class="text-white font-medium">UI / UX</div>
+                            <div class="text-sm">Intuitive interfaces</div>
+                        </div>
+                        <div class="border-l-2 border-bright pl-4">
+                            <div class="text-white font-medium">Problem Solving</div>
+                            <div class="text-sm">Real-world impact</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SKILLS -->
+        <section id="skills" class="relative py-28 overflow-hidden">
+            <div class="orb w-96 h-96 bg-deep/40 top-10 -right-20"></div>
+            <div class="relative max-w-6xl mx-auto px-5">
+                <p class="rv font-mono text-xs tracking-[.3em] text-bright">02 — SKILLS</p>
+                <h2 class="rv mt-4 text-4xl sm:text-5xl font-bold" style="--d:.1s">Tools I <span class="grad">work
+                        with</span>
+                </h2>
+                <div class="mt-14 grid md:grid-cols-2 gap-5" id="skillGrid"></div>
+            </div>
+        </section>
+
+        <!-- PROJECTS -->
+        <section id="projects" class="relative py-28 bg-bg2">
+            <div class="max-w-6xl mx-auto px-5">
+                <p class="rv font-mono text-xs tracking-[.3em] text-bright">03 — PROJECTS</p>
+                <h2 class="rv mt-4 text-4xl sm:text-5xl font-bold" style="--d:.1s">Selected <span
+                        class="grad">work</span></h2>
+                <div class="mt-16 space-y-20" id="projList"></div>
+            </div>
+        </section>
+
+        <!-- EDUCATION -->
+        <section id="education" class="relative py-28">
+            <div class="max-w-3xl mx-auto px-5">
+                <p class="rv font-mono text-xs tracking-[.3em] text-bright">04 — EDUCATION</p>
+                <h2 class="rv mt-4 text-4xl sm:text-5xl font-bold" style="--d:.1s">The <span class="grad">journey</span>
+                </h2>
+                <div class="tl relative mt-14 space-y-10 pl-10">
+                    <div class="rv relative"><span
+                            class="absolute -left-10 top-1.5 w-4 h-4 rounded-full bg-bg border-2 border-bright shadow-[0_0_14px_#00B4D8]"></span>
+                        <div class="glass rounded-2xl p-6">
+                            <div class="font-mono text-xs text-bright">[2026 — PRESENT]</div>
+                            <h3 class="mt-2 text-xl font-semibold">BSc (Hons) Computing</h3>
+                            <div class="text-mute">KMD College — Awarded by the University of Greenwich</div>
+                            <p class="mt-3 text-mute text-sm">Studying software development, web technologies, mobile
+                                application development, databases, and modern computing practices.</p>
+                        </div>
+                    </div>
+                    <div class="rv relative"><span
+                            class="absolute -left-10 top-1.5 w-4 h-4 rounded-full bg-bg border-2 border-ocean"></span>
+                        <div class="glass rounded-2xl p-6">
+                            <div class="font-mono text-xs text-bright">[2023 — 2025]</div>
+                            <h3 class="mt-2 text-xl font-semibold">NCC Level 4 & 5 Diploma in Computing</h3>
+                            <div class="text-mute">KBTC College</div>
+                            <p class="mt-3 text-mute text-sm">Studied software development, web technologies, database
+                                systems,
+                                programming, and core computing concepts, building a foundation
+                                for developing practical software applications.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT -->
+        <!-- <section id="contact" class="relative py-28 overflow-hidden bg-bg2">
+            <div class="orb w-[520px] h-[520px] bg-ocean/30 left-1/2 -translate-x-1/2 -bottom-60"></div>
+            <div class="relative max-w-4xl mx-auto px-5 text-center">
+                <p class="rv font-mono text-xs tracking-[.3em] text-bright">05 — CONTACT</p>
+                <h2 class="rv mt-4 text-4xl sm:text-6xl font-bold leading-tight" style="--d:.1s">Let's Build
+                    Something<br><span class="grad">Great Together.</span></h2>
+                <p class="rv mt-6 text-mute text-lg max-w-xl mx-auto" style="--d:.2s">Recruiters, developers and
+                    collaborators —
+                    I'd love to hear about opportunities and projects.</p>
+                <div class="mt-12 grid sm:grid-cols-3 gap-4 text-left">
+                    <a href="mailto:you@example.com" class="rv pcard glass rounded-2xl p-6 block" style="--d:.1s">
+                        <div class="font-mono text-xs text-bright">EMAIL</div>
+                        <div class="mt-3 font-medium break-all">einkyinnthwe@gmail.com</div>
+                        <div class="mt-4 text-mute text-sm">Opens your mail app →</div>
+                    </a>
+                    <a href="https://github.com/your-username" class="rv pcard glass rounded-2xl p-6 block"
+                        style="--d:.2s">
+                        <div class="font-mono text-xs text-bright">GITHUB</div>
+                        <div class="mt-3 font-medium">https://github.com/EinKyinnThwe</div>
+                        <div class="mt-4 text-mute text-sm">See my code →</div>
+                    </a>
+                    <a href="https://linkedin.com/in/your-profile" class="rv pcard glass rounded-2xl p-6 block"
+                        style="--d:.3s">
+                        <div class="font-mono text-xs text-bright">LINKEDIN</div>
+                        <div class="mt-3 font-medium">https://www.linkedin.com/in/ein-kyinn-thwe-9566b938b/</div>
+                        <div class="mt-4 text-mute text-sm">Let's connect →</div>
+                    </a>
+                </div>
+            </div>
+        </section> -->
+        <section id="contact" class="relative py-28 overflow-hidden bg-bg2">
+            <div class="orb w-[520px] h-[520px] bg-ocean/30 left-1/2 -translate-x-1/2 -bottom-60"></div>
+        
+            <div class="relative max-w-4xl mx-auto px-5 text-center">
+                <p class="rv font-mono text-xs tracking-[.3em] text-bright">
+                    05 — CONTACT
+                </p>
+        
+                <h2 class="rv mt-4 text-4xl sm:text-6xl font-bold leading-tight" style="--d:.1s">
+                    Let's Build
+                    Something<br>
+                    <span class="grad">Great Together.</span>
+                </h2>
+        
+                <p class="rv mt-6 text-mute text-lg max-w-xl mx-auto" style="--d:.2s">
+                    Recruiters, developers and collaborators —
+                    I'd love to hear about opportunities and projects.
+                </p>
+        
+                <div class="mt-12 grid sm:grid-cols-3 gap-4 text-left">
+        
+                    <!-- Email -->
+                    <a href="mailto:einkyinnthwe@gmail.com" class="rv pcard glass rounded-2xl p-6 block" style="--d:.1s">
+                        <div class="font-mono text-xs text-bright">
+                            EMAIL
+                        </div>
+        
+                        <div class="mt-3 font-medium break-all">
+                            einkyinnthwe@gmail.com
+                        </div>
+        
+                        <div class="mt-4 text-mute text-sm">
+                            Send me an email →
+                        </div>
+                    </a>
+        
+                    <!-- GitHub -->
+                    <a href="https://github.com/EinKyinnThwe" target="_blank" rel="noopener noreferrer"
+                        class="rv pcard glass rounded-2xl p-6 block" style="--d:.2s">
+                        <div class="font-mono text-xs text-bright">
+                            GITHUB
+                        </div>
+        
+                        <div class="mt-3 font-medium">
+                            GitHub Profile
+                        </div>
+        
+                        <div class="mt-4 text-mute text-sm">
+                            See my code →
+                        </div>
+                    </a>
+        
+                    <!-- LinkedIn -->
+                    <a href="https://www.linkedin.com/in/ein-kyinn-thwe-9566b938b/" target="_blank" rel="noopener noreferrer"
+                        class="rv pcard glass rounded-2xl p-6 block" style="--d:.3s">
+                        <div class="font-mono text-xs text-bright">
+                            LINKEDIN
+                        </div>
+        
+                        <div class="mt-3 font-medium">
+                            LinkedIn Profile
+                        </div>
+        
+                        <div class="mt-4 text-mute text-sm">
+                            Let's connect →
+                        </div>
+                    </a>
+        
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-[var(--line)] bg-bg py-10">
+        <div
+            class="max-w-6xl mx-auto px-5 flex flex-col md:flex-row gap-6 md:items-center justify-between text-sm text-mute">
+            <div><span class="font-mono text-white tracking-widest">EK<span class="text-bright">.</span></span> <span
+                    class="ml-2">Crafting software with care.</span></div>
+            <nav class="flex flex-wrap gap-5" aria-label="Footer"><a class="hover:text-bright" href="#about">About</a><a
+                    class="hover:text-bright" href="#skills">Skills</a><a class="hover:text-bright"
+                    href="#projects">Projects</a><a class="hover:text-bright" href="#contact">Contact</a><a
+                    class="hover:text-bright" href="https://github.com/EinKyinnThwe">GitHub</a><a
+                    class="hover:text-bright" href="https://www.linkedin.com/in/ein-kyinn-thwe-9566b938b/">LinkedIn</a></nav>
+            <div>© <span id="yr"></span> EinKyinnThwe</div>
+        </div>
+    </footer>
+
+    <script>
+        const skills = { 'Frontend': ['Angular', 'HTML5', 'CSS3', 'JavaScript', 'Tailwind CSS'], 'Mobile': ['Kotlin', 'Android Development', 'Jetpack Compose', 'React Native'], 'Backend': ['PHP', 'REST APIs', 'MySQL', 'Firebase'], 'Tools & Platforms': ['Git', 'GitHub', 'Visual Studio Code', 'Android Studio'] };
+        document.getElementById('skillGrid').innerHTML = Object.entries(skills).map(([k, v], i) => `<div class="rv glass rounded-2xl p-7" style="--d:${i * .1}s"><div class="flex items-center gap-3 mb-5"><span class="w-2 h-2 rounded-full bg-bright shadow-[0_0_12px_#00B4D8]"></span><h3 class="font-semibold text-lg">${k}</h3></div><div class="flex flex-wrap gap-2.5">${v.map(t => `<span class="chip font-mono text-sm text-mute border border-[var(--line)] rounded-lg px-3.5 py-2 bg-bg/50">${t}</span>`).join('')}</div></div>`).join('');
+
+        const projs = [
+            {
+                n: 'HairHub Pro',
+                d: 'A full-stack mobile application designed for hair salons to manage stylist skills, handle automated booking confirmations. Developed a dynamic skill management system allowing stylists to be assigned specific services and expertise. Built back-end logic using PHP and MySQL to process and autoconfirm customer appointments instantly.',
+                t: ['Kotlin', 'PHP', 'MySQL', 'Retrofit', 'XML Layout'],
+                g: '#00B4D8,#023E8A',
+                ui: 'salon',
+                github: 'https://github.com/EinKyinnThwe/hairhubpro-mobile-project'
+            },
+            {
+                n: 'Food Fusion',
+                d: 'A responsive recipe management platform where users can explore detailed recipes, showcase food, access educational cookbooks through PDF and video content, and share their culinary experiences with the community.',
+                t: ['HTML', 'Tailwind CSS', 'PHP', 'MySQL', 'JavaScript'],
+                g: '#0077B6,#00B4D8',
+                ui: 'ingredients',
+                github: 'https://github.com/EinKyinnThwe/Food_Fusion_Website'
+            },
+            {
+                n: 'WatchFun',
+                d: 'A movie discovery application that helps users explore films.',
+                t: ['React Native', 'JavaScript', 'Firebase', 'TMDB API'],
+                g: '#023E8A,#0077B6',
+                ui: 'movies',
+                github: 'https://github.com/EinKyinnThwe/watch-fun'
+            }
+        ];
+        const mock = `<div class="shot absolute inset-0 flex items-center justify-center"><div class="w-40 sm:w-48 rounded-[1.6rem] border border-white/20 bg-bg/80 backdrop-blur p-3 shadow-2xl -rotate-3"><div class="h-3 w-16 rounded bg-white/30 mb-3"></div><div class="h-20 rounded-xl bg-white/10 mb-2"></div><div class="grid grid-cols-2 gap-2"><div class="h-14 rounded-lg bg-white/10"></div><div class="h-14 rounded-lg bg-bright/40"></div></div><div class="h-6 rounded-lg bg-bright/60 mt-3"></div></div></div>`;
+        //document.getElementById('projList').innerHTML = projs.map((p, i) => `<article class="rv pcard glass rounded-3xl overflow-hidden grid lg:grid-cols-12"><div class="relative lg:col-span-4 h-64 sm:h-80 lg:h-[26rem] overflow-hidden ${i % 2 ? 'lg:order-2' : ''}" style="background:radial-gradient(circle at 30% 20%,${p.g.split(',')[1]}66,transparent 60%),linear-gradient(135deg,${p.g.split(',')[0]},#05070A)"><div class="absolute inset-0 grid-bg opacity-40"></div>${mock}<span class="absolute top-4 left-4 font-mono text-xs text-white/70"></span></div><div class="lg:col-span-5 p-7 sm:p-10 flex flex-col justify-center"><div class="font-mono text-xs text-bright">PROJECT 0${i + 1}</div><h3 class="mt-3 text-3xl font-bold">${p.n}</h3><p class="mt-4 text-mute leading-relaxed text-justify">${p.d}</p><div class="mt-6 flex flex-wrap gap-2">${p.t.map(x => `<span class="font-mono text-xs border border-[var(--line)] text-bright/90 rounded-full px-3 py-1.5">${x}</span>`).join('')}</div><div class="mt-8 flex gap-3"><a href="https://github.com/your-username/${p.n.toLowerCase().replace(/ /g, '-')}" class="btn px-5 py-2.5 rounded-xl text-sm font-medium bg-gradient-to-r from-bright to-ocean text-bg">GitHub</a><a href="#" class="btn px-5 py-2.5 rounded-xl text-sm font-medium glass hover:border-bright/60">Live Demo</a></div></div></article>`).join('');
+
+        document.getElementById('projList').innerHTML = projs.map((p, i) => `
+            <article class="rv pcard glass rounded-3xl overflow-hidden flex flex-col lg:flex-row">
+
+                <div
+                    class="relative w-full lg:w-[30%] h-64 sm:h-80 lg:h-auto lg:min-h-[26rem] shrink-0 overflow-hidden ${i % 2 ? 'lg:order-2' : ''}"
+                    style="background:radial-gradient(circle at 30% 20%,${p.g.split(',')[1]}66,transparent 60%),linear-gradient(135deg,${p.g.split(',')[0]},#05070A)"
+                >
+                    <div class="absolute inset-0 grid-bg opacity-40"></div>
+
+                    ${mock}
+
+                    <span class="absolute top-4 left-4 font-mono text-xs text-white/70">
+                        PROJECT 0${i + 1}
+                    </span>
+                </div>
+
+                <div class="w-full lg:w-[70%] min-w-0 p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
+                    <div class="font-mono text-xs text-bright">
+                        PROJECT 0${i + 1}
+                    </div>
+
+                    <h3 class="mt-3 text-2xl sm:text-3xl font-bold">
+                        ${p.n}
+                    </h3>
+
+                    <p class="mt-4 text-mute leading-relaxed text-justify break-words">
+                        ${p.d}
+                    </p>
+
+                    <div class="mt-6 flex flex-wrap gap-2">
+                        ${p.t.map(x => `
+                            <span class="font-mono text-xs border border-[var(--line)] text-bright/90 rounded-full px-3 py-1.5">
+                                ${x}
+                            </span>
+                        `).join('')}
+                    </div>
+
+                    <div class="mt-8 flex flex-wrap gap-3">
+                        <a
+                            href="${p.github}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="btn px-10 py-2.5 rounded-xl text-sm font-medium bg-gradient-to-r from-bright to-ocean text-bg"
+                        >
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+
+            </article>
+        `).join('');
+        document.getElementById('yr').textContent = new Date().getFullYear();
+        // reveal
+        const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target) } }), { threshold: .12 });
+        document.querySelectorAll('.rv').forEach(el => io.observe(el));
+        // header
+        const hdr = document.getElementById('hdr');
+        const onS = () => hdr.classList.toggle('bg-bg/80', scrollY > 30) || hdr.classList.toggle('backdrop-blur-xl', scrollY > 30) || hdr.classList.toggle('border-b', scrollY > 30);
+        addEventListener('scroll', () => { hdr.classList.toggle('bg-bg/80', scrollY > 30); hdr.classList.toggle('backdrop-blur-xl', scrollY > 30); hdr.style.borderBottom = scrollY > 30 ? '1px solid var(--line)' : '1px solid transparent' }, { passive: true });
+        // active section
+        const links = [...document.querySelectorAll('.nav a')];
+        const so = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(l => l.classList.toggle('act', l.getAttribute('href') === '#' + e.target.id)) }), { rootMargin: '-45% 0px -50% 0px' });
+        document.querySelectorAll('main section').forEach(s => so.observe(s));
+        // mobile menu
+        const ham = document.getElementById('ham'), mob = document.getElementById('mob');
+        const tog = o => { ham.classList.toggle('open', o); ham.setAttribute('aria-expanded', o); mob.style.maxHeight = o ? mob.scrollHeight + 'px' : '0' };
+        ham.onclick = () => tog(!ham.classList.contains('open'));
+        mob.querySelectorAll('a').forEach(a => a.onclick = () => tog(false));
+    </script>
+</body>
+
+</html>
